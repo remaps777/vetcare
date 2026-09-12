@@ -1,0 +1,95 @@
+- generic [ref=f1e2]:
+  - complementary "Navegación principal" [ref=f1e3]:
+    - generic [ref=f1e4]:
+      - link " VetCare" [ref=f1e5] [cursor=pointer]:
+        - /url: http://127.0.0.1:8001/admin/dashboard
+        - generic [ref=f1e6]: 
+        - text: VetCare
+      - text: 
+    - navigation [ref=f1e7]:
+      - link "Dashboard" [ref=f1e8] [cursor=pointer]:
+        - /url: http://127.0.0.1:8001/admin/dashboard
+        - generic [aria-hidden] [ref=f1e9]: 
+      - link "Doctores" [ref=f1e11] [cursor=pointer]:
+        - /url: http://127.0.0.1:8001/admin/doctors/pending
+        - generic [aria-hidden] [ref=f1e12]: 
+      - link "Propietarios" [ref=f1e14] [cursor=pointer]:
+        - /url: http://127.0.0.1:8001/admin/owners
+        - generic [aria-hidden] [ref=f1e15]: 
+      - link "Mascotas" [ref=f1e17] [cursor=pointer]:
+        - /url: http://127.0.0.1:8001/admin/pets
+        - generic [aria-hidden] [ref=f1e18]: 
+      - link "Citas" [ref=f1e20] [cursor=pointer]:
+        - /url: http://127.0.0.1:8001/admin/appointments
+        - generic [aria-hidden] [ref=f1e21]: 
+      - link "Consultas" [ref=f1e23] [cursor=pointer]:
+        - /url: http://127.0.0.1:8001/admin/consultations
+        - generic [aria-hidden] [ref=f1e24]: 
+      - link "Vacunas" [ref=f1e26] [cursor=pointer]:
+        - /url: http://127.0.0.1:8001/admin/vaccinations
+        - generic [aria-hidden] [ref=f1e27]: 
+      - link "Especies" [ref=f1e29] [cursor=pointer]:
+        - /url: http://127.0.0.1:8001/admin/species
+        - generic [aria-hidden] [ref=f1e30]: 
+      - link "Razas" [ref=f1e32] [cursor=pointer]:
+        - /url: http://127.0.0.1:8001/admin/breeds
+        - generic [aria-hidden] [ref=f1e33]: 
+      - link "Usuarios" [ref=f1e35] [cursor=pointer]:
+        - /url: http://127.0.0.1:8001/admin/users
+        - generic [aria-hidden] [ref=f1e36]: 
+      - link "Configuración" [ref=f1e38] [cursor=pointer]:
+        - /url: http://127.0.0.1:8001/admin/settings
+        - generic [aria-hidden] [ref=f1e39]: 
+    - generic [ref=f1e41]:
+      - generic [ref=f1e42]: Administrador de prueba
+      - generic [ref=f1e43]: preview_admin
+  - generic [ref=f1e44]:
+    - banner [ref=f1e45]:
+      - generic [ref=f1e46]:
+        - text: 
+        - generic [ref=f1e47]: Dashboard
+      - generic [ref=f1e48]:
+        - generic [ref=f1e49]: Administrador
+        - generic [ref=f1e50]:
+          - button "Menú de cuenta" [ref=f1e51] [cursor=pointer]:
+            - generic [ref=f1e52]: 
+            - text: Mi cuenta
+          - text: 
+    - main [ref=f1e53]:
+      - generic [ref=f1e54]:
+        - heading "Resumen de la clínica" [level=1] [ref=f1e55]
+        - paragraph [ref=f1e56]: Bienvenido, Administrador de prueba. Consulta la actividad y las solicitudes de registro.
+      - generic [ref=f1e57]:
+        - generic [ref=f1e60]:
+          - generic [aria-hidden] [ref=f1e62]: 
+          - generic [ref=f1e63]:
+            - generic [ref=f1e64]: Propietarios
+            - generic [ref=f1e65]: "1"
+        - generic [ref=f1e68]:
+          - generic [aria-hidden] [ref=f1e70]: 
+          - generic [ref=f1e71]:
+            - generic [ref=f1e72]: Doctores
+            - generic [ref=f1e73]: "1"
+        - generic [ref=f1e76]:
+          - generic [aria-hidden] [ref=f1e78]: 
+          - generic [ref=f1e79]:
+            - generic [ref=f1e80]: Doctores pendientes
+            - generic [ref=f1e81]: "1"
+        - generic [ref=f1e84]:
+          - generic [aria-hidden] [ref=f1e86]: 
+          - generic [ref=f1e87]:
+            - generic [ref=f1e88]: Mascotas
+            - generic [ref=f1e89]: "0"
+        - generic [ref=f1e92]:
+          - generic [aria-hidden] [ref=f1e94]: 
+          - generic [ref=f1e95]:
+            - generic [ref=f1e96]: Citas próximas
+            - generic [ref=f1e97]: "0"
+      - generic [ref=f1e99]:
+        - generic [ref=f1e100]:
+          - heading "Solicitudes de doctores" [level=2] [ref=f1e101]
+          - paragraph [ref=f1e102]: Revisa los datos profesionales antes de habilitar el acceso a la clínica.
+        - link " Revisar solicitudes" [ref=f1e103] [cursor=pointer]:
+          - /url: http://127.0.0.1:8001/admin/doctors/pending
+          - generic [ref=f1e104]: 
+          - text: Revisar solicitudes

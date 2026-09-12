@@ -1,0 +1,53 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e3]:
+      - link "Inicio de VetCare" [ref=e4] [cursor=pointer]:
+        - /url: http://127.0.0.1:8000
+        - generic [aria-hidden] [ref=e6]: 
+        - generic [ref=e7]:
+          - strong [ref=e8]: VetCare
+          - generic [ref=e9]: Sistema Integral de Gestión Clínica Veterinaria
+      - link "Iniciar sesión" [ref=e10] [cursor=pointer]:
+        - /url: http://127.0.0.1:8000/login
+  - main [ref=e11]:
+    - generic [ref=e14]:
+      - generic [ref=e15]:
+        - generic [aria-hidden] [ref=e16]: 
+        - text: Cuidado conectado
+      - heading "Cuidamos a tu mejor amigo con el mismo cariño que tú." [level=1] [ref=e17]
+      - paragraph [ref=e18]: Gestiona citas, mascotas e historial médico en una plataforma segura para propietarios y el equipo de la clínica.
+      - generic [ref=e19]:
+        - link "Ingresar al sistema" [ref=e20] [cursor=pointer]:
+          - /url: "#accesos"
+        - link "Ya tengo una cuenta" [ref=e21] [cursor=pointer]:
+          - /url: http://127.0.0.1:8000/login
+    - region [ref=e42]:
+      - generic [ref=e43]:
+        - generic [ref=e44]:
+          - generic [ref=e45]: Tu acceso
+          - heading "Accede a nuestra plataforma" [level=2] [ref=e46]
+          - paragraph [ref=e47]: Elige el flujo que corresponde a tu relación con la clínica.
+        - generic [ref=e48]:
+          - article [ref=e49]:
+            - generic [aria-hidden] [ref=e51]: 
+            - heading "Soy propietario" [level=3] [ref=e52]
+            - paragraph [ref=e53]: Crea tu cuenta para registrar mascotas, consultar su historial y gestionar sus citas.
+            - generic [ref=e54]:
+              - link "Registrarme como propietario" [ref=e55] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/register/owner
+              - link "Ya tengo una cuenta" [ref=e56] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/login
+          - article [ref=e57]:
+            - generic [aria-hidden] [ref=e59]: 
+            - heading "Soy trabajador" [level=3] [ref=e60]
+            - paragraph [ref=e61]: Solicita acceso para Doctor, Caja, Inventario o Almacén. Un administrador revisará tus datos.
+            - generic [ref=e62]:
+              - link "Solicitar acceso como trabajador" [ref=e63] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/register/worker
+              - link "Ya tengo una cuenta aprobada" [ref=e64] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/login
+  - contentinfo [ref=e65]:
+    - generic [ref=e67]:
+      - heading "VetCare Clínica Veterinaria" [level=2] [ref=e68]
+      - paragraph [ref=e69]: "123123123123"
+    - generic [ref=e70]: © 2026 VetCare. Todos los derechos reservados.

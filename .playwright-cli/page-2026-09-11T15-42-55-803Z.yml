@@ -1,0 +1,56 @@
+- generic [ref=f3e3]:
+  - generic [ref=f3e4]:
+    - link " VetCare" [ref=f3e5] [cursor=pointer]:
+      - /url: http://127.0.0.1:8000
+      - generic [ref=f3e6]: 
+      - generic [ref=f3e8]: VetCare
+    - paragraph [ref=f3e9]: Sistema Integral de Gestión Clínica Veterinaria
+  - generic [ref=f3e10]:
+    - generic [ref=f3e11]:
+      - generic [ref=f3e12]:
+        - generic [ref=f3e13]: 
+        - text: Equipo VetCare
+      - heading "Solicitud de acceso como trabajador" [level=1] [ref=f3e14]
+      - paragraph [ref=f3e15]: Elige el puesto que solicitas. La clínica revisará tus datos antes de habilitar tu cuenta.
+    - generic [ref=f3e16]:
+      - generic [ref=f3e17]:
+        - generic [ref=f3e18]:
+          - generic [ref=f3e19]: Nombres *
+          - textbox "Nombres *" [ref=f3e20]
+        - generic [ref=f3e21]:
+          - generic [ref=f3e22]: Apellidos *
+          - textbox "Apellidos *" [ref=f3e23]
+        - generic [ref=f3e24]:
+          - generic [ref=f3e25]: DNI *
+          - textbox "DNI *" [ref=f3e26]
+        - generic [ref=f3e27]:
+          - generic [ref=f3e28]: Teléfono *
+          - textbox "Teléfono *" [ref=f3e29]
+        - generic [ref=f3e30]:
+          - generic [ref=f3e31]: Correo electrónico *
+          - textbox "Correo electrónico *" [ref=f3e32]
+        - generic [ref=f3e33]:
+          - generic [ref=f3e34]: Nombre de usuario *
+          - textbox "Nombre de usuario *" [ref=f3e35]
+        - generic [ref=f3e36]:
+          - generic [ref=f3e37]: Puesto solicitado *
+          - combobox "Puesto solicitado *" [ref=f3e38]:
+            - option "Selecciona un puesto" [selected]
+            - option "Almacén"
+            - option "Caja"
+            - option "Doctor"
+            - option "Inventario"
+        - generic [ref=f3e39]:
+          - generic [ref=f3e40]: Contraseña *
+          - textbox "Contraseña *" [ref=f3e41]
+          - generic [ref=f3e42]: Mínimo 8 caracteres.
+        - generic [ref=f3e43]:
+          - generic [ref=f3e44]: Confirmar contraseña *
+          - textbox "Confirmar contraseña *" [ref=f3e45]
+      - paragraph [ref=f3e46]: Podrás usar tu usuario y contraseña cuando la clínica apruebe tu solicitud.
+      - button "Enviar solicitud" [ref=f3e47] [cursor=pointer]
+      - paragraph [ref=f3e48]:
+        - text: ¿Ya tienes cuenta?
+        - link "Iniciar sesión" [ref=f3e49] [cursor=pointer]:
+          - /url: http://127.0.0.1:8000/login
+  - generic [ref=f3e50]: © 2026 VetCare. Todos los derechos reservados.

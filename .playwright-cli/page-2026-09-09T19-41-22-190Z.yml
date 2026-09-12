@@ -1,0 +1,42 @@
+- generic [ref=f4e3]:
+  - generic [ref=f4e4]:
+    - link " VetCare" [ref=f4e5] [cursor=pointer]:
+      - /url: http://127.0.0.1:8001
+      - generic [ref=f4e6]: 
+      - generic [ref=f4e8]: VetCare
+    - paragraph [ref=f4e9]: Sistema Integral de Gestión Clínica Veterinaria
+  - generic [ref=f4e10]:
+    - generic [ref=f4e11]:
+      - heading "Bienvenido de nuevo" [level=4] [ref=f4e12]
+      - paragraph [ref=f4e13]: Ingresa tus credenciales para acceder a la plataforma
+    - generic [ref=f4e14]:
+      - generic [ref=f4e15]:
+        - generic [ref=f4e16]: Usuario o correo electrónico
+        - generic [ref=f4e17]:
+          - generic [ref=f4e18]: 
+          - textbox "Usuario o correo electrónico" [active] [ref=f4e20]:
+            - /placeholder: ej. juanperez o juan@correo.com
+      - generic [ref=f4e21]:
+        - generic [ref=f4e22]: Contraseña
+        - generic [ref=f4e24]:
+          - generic [ref=f4e25]: 
+          - textbox "Contraseña" [ref=f4e27]:
+            - /placeholder: ••••••••
+      - generic [ref=f4e28]:
+        - checkbox "Recordarme en este equipo" [ref=f4e29]
+        - generic [ref=f4e30]: Recordarme en este equipo
+      - button " Ingresar" [ref=f4e32] [cursor=pointer]:
+        - generic [ref=f4e33]: 
+        - text: Ingresar
+      - generic [ref=f4e34]:
+        - paragraph [ref=f4e35]: ¿Aún no tienes cuenta?
+        - generic [ref=f4e36]:
+          - link " Registrarme como propietario" [ref=f4e37] [cursor=pointer]:
+            - /url: http://127.0.0.1:8001/register/owner
+            - generic [ref=f4e38]: 
+            - text: Registrarme como propietario
+          - link " Registrarme como doctor" [ref=f4e39] [cursor=pointer]:
+            - /url: http://127.0.0.1:8001/register/doctor
+            - generic [ref=f4e40]: 
+            - text: Registrarme como doctor
+  - generic [ref=f4e41]: © 2026 VetCare. Todos los derechos reservados.

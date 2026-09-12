@@ -1,0 +1,68 @@
+- generic [ref=f3e2]:
+  - complementary "Navegación principal" [ref=f3e3]:
+    - generic [ref=f3e4]:
+      - link " VetCare" [ref=f3e5] [cursor=pointer]:
+        - /url: http://127.0.0.1:8001/admin/dashboard
+        - generic [ref=f3e6]: 
+        - text: VetCare
+      - text: 
+    - navigation [ref=f3e7]:
+      - link "Dashboard" [ref=f3e8] [cursor=pointer]:
+        - /url: http://127.0.0.1:8001/admin/dashboard
+        - generic [aria-hidden] [ref=f3e9]: 
+      - link "Doctores" [ref=f3e11] [cursor=pointer]:
+        - /url: http://127.0.0.1:8001/admin/doctors/pending
+        - generic [aria-hidden] [ref=f3e12]: 
+      - link "Propietarios" [ref=f3e14] [cursor=pointer]:
+        - /url: http://127.0.0.1:8001/admin/owners
+        - generic [aria-hidden] [ref=f3e15]: 
+      - link "Mascotas" [ref=f3e17] [cursor=pointer]:
+        - /url: http://127.0.0.1:8001/admin/pets
+        - generic [aria-hidden] [ref=f3e18]: 
+      - link "Citas" [ref=f3e20] [cursor=pointer]:
+        - /url: http://127.0.0.1:8001/admin/appointments
+        - generic [aria-hidden] [ref=f3e21]: 
+      - link "Consultas" [ref=f3e23] [cursor=pointer]:
+        - /url: http://127.0.0.1:8001/admin/consultations
+        - generic [aria-hidden] [ref=f3e24]: 
+      - link "Vacunas" [ref=f3e26] [cursor=pointer]:
+        - /url: http://127.0.0.1:8001/admin/vaccinations
+        - generic [aria-hidden] [ref=f3e27]: 
+      - link "Especies" [ref=f3e29] [cursor=pointer]:
+        - /url: http://127.0.0.1:8001/admin/species
+        - generic [aria-hidden] [ref=f3e30]: 
+      - link "Razas" [ref=f3e32] [cursor=pointer]:
+        - /url: http://127.0.0.1:8001/admin/breeds
+        - generic [aria-hidden] [ref=f3e33]: 
+      - link "Usuarios" [ref=f3e35] [cursor=pointer]:
+        - /url: http://127.0.0.1:8001/admin/users
+        - generic [aria-hidden] [ref=f3e36]: 
+      - link "Configuración" [ref=f3e38] [cursor=pointer]:
+        - /url: http://127.0.0.1:8001/admin/settings
+        - generic [aria-hidden] [ref=f3e39]: 
+    - generic [ref=f3e41]:
+      - generic [ref=f3e42]: Administrador de prueba
+      - generic [ref=f3e43]: preview_admin
+  - generic [ref=f3e44]:
+    - banner [ref=f3e45]:
+      - generic [ref=f3e46]:
+        - text: 
+        - generic [ref=f3e47]: Doctores
+      - generic [ref=f3e48]:
+        - generic [ref=f3e49]: Administrador
+        - generic [ref=f3e50]:
+          - button "Menú de cuenta" [ref=f3e51] [cursor=pointer]:
+            - generic [ref=f3e52]: 
+            - text: Mi cuenta
+          - text: 
+    - main [ref=f3e53]:
+      - alert [ref=f3e54]:
+        - text: Doctor aprobado. Su cuenta ya está activa.
+        - button "Cerrar aviso" [ref=f3e55] [cursor=pointer]
+      - generic [ref=f3e56]:
+        - heading "Doctores pendientes" [level=1] [ref=f3e57]
+        - paragraph [ref=f3e58]: Valida cada solicitud para aprobar o rechazar el acceso profesional.
+      - generic [ref=f3e60]:
+        - generic [ref=f3e61]: 
+        - heading "No hay solicitudes pendientes" [level=2] [ref=f3e62]
+        - paragraph [ref=f3e63]: Las nuevas solicitudes aparecerán aquí.

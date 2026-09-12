@@ -1,0 +1,85 @@
+- generic [ref=f2e2]:
+  - complementary "Navegación principal" [ref=f2e3]:
+    - generic [ref=f2e4]:
+      - link " VetCare" [ref=f2e5] [cursor=pointer]:
+        - /url: http://127.0.0.1:8001/admin/dashboard
+        - generic [ref=f2e6]: 
+        - text: VetCare
+      - button "Cerrar menú" [ref=f2e7] [cursor=pointer]:
+        - generic [ref=f2e8]: 
+    - navigation [ref=f2e9]:
+      - link "Dashboard" [ref=f2e10] [cursor=pointer]:
+        - /url: http://127.0.0.1:8001/admin/dashboard
+        - generic [aria-hidden] [ref=f2e11]: 
+      - link "Doctores" [ref=f2e13] [cursor=pointer]:
+        - /url: http://127.0.0.1:8001/admin/doctors/pending
+        - generic [aria-hidden] [ref=f2e14]: 
+      - link "Propietarios" [ref=f2e16] [cursor=pointer]:
+        - /url: http://127.0.0.1:8001/admin/owners
+        - generic [aria-hidden] [ref=f2e17]: 
+      - link "Mascotas" [ref=f2e19] [cursor=pointer]:
+        - /url: http://127.0.0.1:8001/admin/pets
+        - generic [aria-hidden] [ref=f2e20]: 
+      - link "Citas" [ref=f2e22] [cursor=pointer]:
+        - /url: http://127.0.0.1:8001/admin/appointments
+        - generic [aria-hidden] [ref=f2e23]: 
+      - link "Consultas" [ref=f2e25] [cursor=pointer]:
+        - /url: http://127.0.0.1:8001/admin/consultations
+        - generic [aria-hidden] [ref=f2e26]: 
+      - link "Vacunas" [ref=f2e28] [cursor=pointer]:
+        - /url: http://127.0.0.1:8001/admin/vaccinations
+        - generic [aria-hidden] [ref=f2e29]: 
+      - link "Especies" [ref=f2e31] [cursor=pointer]:
+        - /url: http://127.0.0.1:8001/admin/species
+        - generic [aria-hidden] [ref=f2e32]: 
+      - link "Razas" [ref=f2e34] [cursor=pointer]:
+        - /url: http://127.0.0.1:8001/admin/breeds
+        - generic [aria-hidden] [ref=f2e35]: 
+      - link "Usuarios" [ref=f2e37] [cursor=pointer]:
+        - /url: http://127.0.0.1:8001/admin/users
+        - generic [aria-hidden] [ref=f2e38]: 
+      - link "Configuración" [ref=f2e40] [cursor=pointer]:
+        - /url: http://127.0.0.1:8001/admin/settings
+        - generic [aria-hidden] [ref=f2e41]: 
+    - generic [ref=f2e43]:
+      - generic [ref=f2e44]: Administrador de prueba
+      - generic [ref=f2e45]: preview_admin
+  - generic [ref=f2e46]:
+    - banner [ref=f2e47]:
+      - generic [ref=f2e48]:
+        - button "Abrir menú" [ref=f2e49] [cursor=pointer]:
+          - generic [ref=f2e50]: 
+        - generic [ref=f2e51]: Doctores
+      - generic [ref=f2e53]:
+        - button "Menú de cuenta" [ref=f2e54] [cursor=pointer]:
+          - generic [ref=f2e55]: 
+        - text: 
+    - main [ref=f2e56]:
+      - generic [ref=f2e57]:
+        - heading "Doctores pendientes" [level=1] [ref=f2e58]
+        - paragraph [ref=f2e59]: Valida cada solicitud para aprobar o rechazar el acceso profesional.
+      - table [ref=f2e62]:
+        - rowgroup [ref=f2e63]:
+          - row [ref=f2e64]:
+            - columnheader "Doctor" [ref=f2e65]
+            - columnheader "DNI / Colegiatura" [ref=f2e66]
+            - columnheader "Especialidad" [ref=f2e67]
+            - columnheader "Contacto" [ref=f2e68]
+            - columnheader "Acciones" [ref=f2e69]
+        - rowgroup [ref=f2e70]:
+          - row [ref=f2e71]:
+            - cell "Elena García preview_doctor Pendiente" [ref=f2e72]:
+              - strong [ref=f2e73]: Elena García
+              - generic [ref=f2e74]: preview_doctor
+              - generic [ref=f2e75]: Pendiente
+            - cell "12345678 CMVP-12345" [ref=f2e76]:
+              - text: "12345678"
+              - generic [ref=f2e77]: CMVP-12345
+            - cell "Medicina de pequeños animales" [ref=f2e78]
+            - cell "doctor@preview.test 987654321" [ref=f2e79]:
+              - text: doctor@preview.test
+              - generic [ref=f2e80]: "987654321"
+            - cell [ref=f2e81]:
+              - generic [ref=f2e82]:
+                - button "Aprobar a Elena García" [ref=f2e84] [cursor=pointer]: Aprobar
+                - button "Rechazar a Elena García" [ref=f2e86] [cursor=pointer]: Rechazar

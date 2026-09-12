@@ -1,0 +1,25 @@
+- generic [active] [ref=e1]:
+  - banner
+  - main [ref=e3]:
+    - generic [ref=e4]:
+      - heading "Let's get started" [level=1] [ref=e5]
+      - paragraph [ref=e6]: "With so many options available to you, we suggest you start with the following:"
+      - list [ref=e7]:
+        - listitem [ref=e8]:
+          - generic [ref=e11]:
+            - text: Read the
+            - link "Documentation" [ref=e12] [cursor=pointer]:
+              - /url: https://laravel.com/docs
+        - listitem [ref=e15]:
+          - generic [ref=e18]:
+            - text: Watch video tutorials at
+            - link "Laracasts" [ref=e19] [cursor=pointer]:
+              - /url: https://laracasts.com
+      - list [ref=e22]:
+        - listitem [ref=e23]:
+          - link "Deploy now" [ref=e24] [cursor=pointer]:
+            - /url: https://cloud.laravel.com
+      - paragraph [ref=e25]:
+        - text: v13.31.0
+        - link "View changelog" [ref=e26] [cursor=pointer]:
+          - /url: https://github.com/laravel/framework/blob/13.x/CHANGELOG.md

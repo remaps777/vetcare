@@ -1,0 +1,795 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "VetCare API",
+        "description": "Documentacion de la API REST del sistema veterinario VetCare",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://127.0.0.1:8000",
+            "description": "Servidor local de desarrollo"
+        }
+    ],
+    "paths": {
+        "/api/auth/token": {
+            "post": {
+                "tags": [
+                    "Autenticación"
+                ],
+                "summary": "Generar token de acceso",
+                "description": "Genera un token Sanctum para un usuario activo usando su username o email.",
+                "operationId": "createApiToken",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "login",
+                                    "password",
+                                    "device_name"
+                                ],
+                                "properties": {
+                                    "login": {
+                                        "type": "string",
+                                        "example": "ana.owner",
+                                        "maxLength": 255
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "password",
+                                        "maxLength": 255
+                                    },
+                                    "device_name": {
+                                        "type": "string",
+                                        "example": "Postman",
+                                        "maxLength": 100
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Token generado correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "token": {
+                                            "type": "string",
+                                            "example": "1|sanctum-token"
+                                        },
+                                        "token_type": {
+                                            "type": "string",
+                                            "example": "Bearer"
+                                        },
+                                        "user": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "format": "int64",
+                                                    "example": 4
+                                                },
+                                                "username": {
+                                                    "type": "string",
+                                                    "example": "ana.owner"
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "Ana Owner"
+                                                },
+                                                "role": {
+                                                    "type": "string",
+                                                    "example": "OWNER"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "La cuenta no tiene acceso"
+                    },
+                    "422": {
+                        "description": "Credenciales o datos de entrada inválidos",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/owner/pets": {
+            "get": {
+                "tags": [
+                    "Mascotas del propietario"
+                ],
+                "summary": "Listar mascotas del propietario",
+                "operationId": "listOwnerPets",
+                "responses": {
+                    "200": {
+                        "description": "Listado paginado de mascotas activas",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Pet"
+                                            }
+                                        },
+                                        "meta": {
+                                            "properties": {
+                                                "current_page": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "last_page": {
+                                                    "type": "integer",
+                                                    "example": 3
+                                                },
+                                                "per_page": {
+                                                    "type": "integer",
+                                                    "example": 15
+                                                },
+                                                "total": {
+                                                    "type": "integer",
+                                                    "example": 42
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Token ausente o inválido"
+                    },
+                    "403": {
+                        "description": "El usuario no tiene el rol OWNER o está inactivo"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Mascotas del propietario"
+                ],
+                "summary": "Crear una mascota",
+                "operationId": "createOwnerPet",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PetRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Mascota creada correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/Pet"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Token ausente o inválido"
+                    },
+                    "403": {
+                        "description": "El usuario no tiene el rol OWNER, está inactivo o no tiene perfil de propietario"
+                    },
+                    "422": {
+                        "description": "Datos inválidos o raza incompatible con la especie",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/owner/pets/{pet}": {
+            "get": {
+                "tags": [
+                    "Mascotas del propietario"
+                ],
+                "summary": "Consultar una mascota",
+                "operationId": "showOwnerPet",
+                "parameters": [
+                    {
+                        "name": "pet",
+                        "in": "path",
+                        "description": "ID de la mascota",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        },
+                        "example": 12
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Mascota encontrada",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/Pet"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Token ausente o inválido"
+                    },
+                    "403": {
+                        "description": "El usuario no tiene el rol OWNER o está inactivo"
+                    },
+                    "404": {
+                        "description": "Mascota no encontrada o no pertenece al propietario"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Mascotas del propietario"
+                ],
+                "summary": "Reemplazar una mascota",
+                "operationId": "replaceOwnerPet",
+                "parameters": [
+                    {
+                        "name": "pet",
+                        "in": "path",
+                        "description": "ID de la mascota",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        },
+                        "example": 12
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PetRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Mascota actualizada",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/Pet"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Token ausente o inválido"
+                    },
+                    "403": {
+                        "description": "El usuario no tiene el rol OWNER o está inactivo"
+                    },
+                    "404": {
+                        "description": "Mascota no encontrada o no pertenece al propietario"
+                    },
+                    "422": {
+                        "description": "Datos inválidos o raza incompatible con la especie",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Mascotas del propietario"
+                ],
+                "summary": "Eliminar una mascota",
+                "operationId": "deleteOwnerPet",
+                "parameters": [
+                    {
+                        "name": "pet",
+                        "in": "path",
+                        "description": "ID de la mascota",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        },
+                        "example": 12
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Mascota eliminada correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Mascota eliminada correctamente."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Token ausente o inválido"
+                    },
+                    "403": {
+                        "description": "El usuario no tiene el rol OWNER o está inactivo"
+                    },
+                    "404": {
+                        "description": "Mascota no encontrada o no pertenece al propietario"
+                    },
+                    "409": {
+                        "description": "La mascota tiene citas o consultas relacionadas"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "patch": {
+                "tags": [
+                    "Mascotas del propietario"
+                ],
+                "summary": "Actualizar parcialmente una mascota",
+                "operationId": "updateOwnerPet",
+                "parameters": [
+                    {
+                        "name": "pet",
+                        "in": "path",
+                        "description": "ID de la mascota",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        },
+                        "example": 12
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PetPatchRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Mascota actualizada",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/Pet"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Token ausente o inválido"
+                    },
+                    "403": {
+                        "description": "El usuario no tiene el rol OWNER o está inactivo"
+                    },
+                    "404": {
+                        "description": "Mascota no encontrada o no pertenece al propietario"
+                    },
+                    "422": {
+                        "description": "Datos inválidos o raza incompatible con la especie",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/swagger-test": {
+            "get": {
+                "tags": [
+                    "Pruebas"
+                ],
+                "summary": "Comprobar Swagger",
+                "description": "Comprueba que Laravel y Swagger estan funcionando correctamente.",
+                "operationId": "swaggerTest",
+                "responses": {
+                    "200": {
+                        "description": "Swagger funciona correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Swagger funciona correctamente"
+                                        },
+                                        "proyecto": {
+                                            "type": "string",
+                                            "example": "VetCare API"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "SpeciesSummary": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 1
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Canino"
+                    }
+                },
+                "type": "object"
+            },
+            "BreedSummary": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 1
+                    },
+                    "species_id": {
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 1
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Mestizo"
+                    }
+                },
+                "type": "object"
+            },
+            "Pet": {
+                "required": [
+                    "id",
+                    "owner_id",
+                    "species_id",
+                    "breed_id",
+                    "name",
+                    "sex",
+                    "is_active"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "format": "int64",
+                        "readOnly": true,
+                        "example": 12
+                    },
+                    "owner_id": {
+                        "type": "integer",
+                        "format": "int64",
+                        "readOnly": true,
+                        "example": 4
+                    },
+                    "species_id": {
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 1
+                    },
+                    "breed_id": {
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 2
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Luna",
+                        "maxLength": 100
+                    },
+                    "sex": {
+                        "type": "string",
+                        "example": "HEMBRA",
+                        "enum": [
+                            "MACHO",
+                            "HEMBRA"
+                        ]
+                    },
+                    "birth_date": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2022-06-15",
+                        "nullable": true
+                    },
+                    "weight": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 12.5,
+                        "nullable": true
+                    },
+                    "color": {
+                        "type": "string",
+                        "example": "Marrón",
+                        "nullable": true,
+                        "maxLength": 50
+                    },
+                    "observations": {
+                        "type": "string",
+                        "example": "Alergia estacional",
+                        "nullable": true,
+                        "maxLength": 2000
+                    },
+                    "is_active": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "species": {
+                        "$ref": "#/components/schemas/SpeciesSummary"
+                    },
+                    "breed": {
+                        "$ref": "#/components/schemas/BreedSummary"
+                    }
+                },
+                "type": "object"
+            },
+            "PetRequest": {
+                "required": [
+                    "name",
+                    "species_id",
+                    "breed_id",
+                    "sex"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "example": "Luna",
+                        "maxLength": 100
+                    },
+                    "species_id": {
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 1
+                    },
+                    "breed_id": {
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 2
+                    },
+                    "sex": {
+                        "type": "string",
+                        "example": "HEMBRA",
+                        "enum": [
+                            "MACHO",
+                            "HEMBRA"
+                        ]
+                    },
+                    "birth_date": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2022-06-15",
+                        "nullable": true
+                    },
+                    "weight": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 12.5,
+                        "nullable": true
+                    },
+                    "color": {
+                        "type": "string",
+                        "example": "Marrón",
+                        "nullable": true,
+                        "maxLength": 50
+                    },
+                    "observations": {
+                        "type": "string",
+                        "example": "Alergia estacional",
+                        "nullable": true,
+                        "maxLength": 2000
+                    },
+                    "is_active": {
+                        "type": "boolean",
+                        "example": true
+                    }
+                },
+                "type": "object"
+            },
+            "PetPatchRequest": {
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "example": "Luna actualizada",
+                        "maxLength": 100
+                    },
+                    "species_id": {
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 1
+                    },
+                    "breed_id": {
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 2
+                    },
+                    "sex": {
+                        "type": "string",
+                        "example": "HEMBRA",
+                        "enum": [
+                            "MACHO",
+                            "HEMBRA"
+                        ]
+                    },
+                    "birth_date": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2022-06-15",
+                        "nullable": true
+                    },
+                    "weight": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 12.5,
+                        "nullable": true
+                    },
+                    "color": {
+                        "type": "string",
+                        "example": "Marrón",
+                        "nullable": true,
+                        "maxLength": 50
+                    },
+                    "observations": {
+                        "type": "string",
+                        "example": "Alergia estacional",
+                        "nullable": true,
+                        "maxLength": 2000
+                    },
+                    "is_active": {
+                        "type": "boolean",
+                        "example": true
+                    }
+                },
+                "type": "object"
+            },
+            "ValidationError": {
+                "properties": {
+                    "message": {
+                        "type": "string",
+                        "example": "The given data was invalid."
+                    },
+                    "errors": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "type": "object"
+            }
+        },
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "bearerFormat": "Token",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Autenticación",
+            "description": "Autenticación"
+        },
+        {
+            "name": "Mascotas del propietario",
+            "description": "Mascotas del propietario"
+        },
+        {
+            "name": "Pruebas",
+            "description": "Pruebas"
+        }
+    ]
+}
