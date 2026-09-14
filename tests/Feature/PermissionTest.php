@@ -97,6 +97,19 @@ class PermissionTest extends TestCase
             ->assertDontSee('href="/admin/users/'.$admin->id.'/edit"', false);
     }
 
+    public function test_permission_page_can_select_an_entire_module_block(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $admin->update(['profile_id' => Profile::where('code', 'ADMINISTRADOR')->value('id')]);
+        $user = User::factory()->create(['role' => User::ROLE_OWNER]);
+
+        $this->actingAs($admin)->get('/admin/users/'.$user->id.'/permissions')
+            ->assertOk()
+            ->assertSee('Seleccionar bloque')
+            ->assertSee('data-permission-module="citas"', false)
+            ->assertSee('citas.editar');
+    }
+
     public function test_users_page_uses_edit_for_profile_and_status_actions(): void
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);

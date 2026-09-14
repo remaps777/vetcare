@@ -15,6 +15,7 @@
                 @if(auth()->user()->hasPermission('inventario.transferir'))<button class="btn btn-sm btn-info text-white" type="button" title="Enviar a tienda" aria-label="Enviar a tienda" data-bs-toggle="modal" data-bs-target="#sendToStoreModal" data-item-type="{{ $item['item_type'] }}" data-item-id="{{ $item['item_id'] }}" data-item-name="{{ $item['name'] }}" data-clinic-stock="{{ $item['clinic_stock'] }}"><i class="bi bi-shop me-1"></i>A tienda</button>@endif
                 @if(auth()->user()->hasPermission('inventario.ajustar'))<button class="btn btn-sm btn-warning text-white" type="button" title="Registrar salida" aria-label="Registrar salida" data-bs-toggle="modal" data-bs-target="#inventoryExitModal" data-item-type="{{ $item['item_type'] }}" data-item-id="{{ $item['item_id'] }}"><i class="bi bi-box-arrow-up me-1"></i>Salida</button>@endif
             </div></td></tr>@empty<tr><td colspan="8" class="text-center text-muted py-4">No hay artículos registrados.</td></tr>@endforelse</tbody></table></div>
+            {{ $items->links('pagination::bootstrap-5') }}
         </div></div>
 @else
         <div class="card border-0 shadow-sm"><div class="card-body"><div class="table-responsive"><table class="table align-middle" data-datatable><thead><tr><th>Fecha</th><th>Almacén</th><th>Artículo</th><th>Movimiento</th><th>Cantidad</th><th>Saldo</th><th>Motivo</th><th>Responsable</th></tr></thead>

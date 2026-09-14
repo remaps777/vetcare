@@ -15,6 +15,7 @@ use App\Services\RecordVersion;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
@@ -22,13 +23,30 @@ class DashboardController extends Controller
     {
         $canReviewWorkerApplications = $request->user()->effectiveRole() === User::ROLE_ADMIN
             || $request->user()->hasPermission('solicitudes_trabajador.ver');
+        $stats = DB::query()
+            ->selectSub(Owner::query()->selectRaw('COUNT(*)'), 'owners_count')
+            ->selectSub(
+                DoctorProfile::query()
+                    ->whereHas('user', fn ($query) => $query->where('role', User::ROLE_DOCTOR))
+                    ->selectRaw('COUNT(*)'),
+                'doctors_count'
+            )
+            ->selectSub(Pet::query()->selectRaw('COUNT(*)'), 'pets_count')
+            ->selectSub(
+                Appointment::query()
+                    ->whereIn('status', [Appointment::STATUS_PENDING, Appointment::STATUS_CONFIRMED])
+                    ->where('scheduled_at', '>=', now())
+                    ->selectRaw('COUNT(*)'),
+                'upcoming_appointments_count'
+            )
+            ->first();
 
         return view('dashboards.admin', [
             'stats' => [
-                'Propietarios' => Owner::count(),
-                'Doctores' => DoctorProfile::whereHas('user', fn ($query) => $query->where('role', User::ROLE_DOCTOR))->count(),
-                'Mascotas' => Pet::count(),
-                'Citas próximas' => Appointment::whereIn('status', [Appointment::STATUS_PENDING, Appointment::STATUS_CONFIRMED])->where('scheduled_at', '>=', now())->count(),
+                'Propietarios' => (int) $stats->owners_count,
+                'Doctores' => (int) $stats->doctors_count,
+                'Mascotas' => (int) $stats->pets_count,
+                'Citas próximas' => (int) $stats->upcoming_appointments_count,
             ],
             'applicationCounts' => $canReviewWorkerApplications ? WorkerApplication::selectRaw('status, COUNT(*) AS total')->groupBy('status')->pluck('total', 'status') : collect(),
             'currentApplications' => $canReviewWorkerApplications

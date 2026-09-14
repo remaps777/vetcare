@@ -91,9 +91,13 @@ class OperationalController extends Controller
 
         $formFields = match ($module) {
             'appointments' => $this->appointmentFormFields($request, $role),
-            'consultations' => $this->consultationFormFields(),
+            'consultations' => $this->consultationFormFields($request, $role),
             default => [],
         };
+        $canEdit = in_array($module, ['appointments', 'consultations'], true)
+            && $request->user()->hasPermission($module.'.editar');
+        $canDelete = in_array($module, ['appointments', 'consultations'], true)
+            && $request->user()->hasPermission($module.'.eliminar');
 
         return ModulePage::render(
             $configuration['title'],
@@ -101,8 +105,10 @@ class OperationalController extends Controller
             [],
             $configuration['columns'],
             $role.'.'.$module,
-            canCreate: $module === 'appointments' || ($module === 'consultations' && $role === 'doctor'),
-            canEdit: false,
+            canCreate: ($module === 'appointments' && ($role === 'doctor' || $request->user()->hasPermission('citas.crear')))
+                || ($module === 'consultations' && ($role === 'doctor' || $request->user()->hasPermission('consultas.crear'))),
+            canEdit: $canEdit,
+            canDelete: $canDelete,
             sensitive: false,
             description: $configuration['description'],
             formFields: $formFields,
@@ -120,7 +126,7 @@ class OperationalController extends Controller
 
     public function storeAppointment(Request $request, ConfirmedMutation $mutation): JsonResponse
     {
-        abort_unless($request->user()->isAdmin() || $request->user()->isDoctor(), 403);
+        abort_unless($request->user()->isDoctor() || $request->user()->hasPermission('citas.crear'), 403);
         $data = $request->validate([
             'owner_id' => ['required', 'integer', 'exists:owners,id'],
             'pet_id' => ['required', 'integer', 'exists:pets,id'],
@@ -162,6 +168,80 @@ class OperationalController extends Controller
         return back()->with('success', 'El estado de la cita fue actualizado.');
     }
 
+    public function updateAppointment(Request $request, ConfirmedMutation $mutation): JsonResponse
+    {
+        abort_unless($request->user()->hasPermission('citas.editar'), 403);
+        $appointment = Appointment::findOrFail($request->route('record'));
+        $data = $request->validate([
+            'owner_id' => ['required', 'integer', 'exists:owners,id'],
+            'pet_id' => ['required', 'integer', 'exists:pets,id'],
+            'doctor_id' => ['required', 'integer', 'exists:doctor_profiles,id'],
+            'scheduled_at' => ['required', 'date_format:Y-m-d\TH:i'],
+            'reason' => ['required', 'string', 'min:3', 'max:255'],
+            'observations' => ['nullable', 'string', 'max:2000'],
+            'status' => ['prohibited'],
+        ]);
+        $pet = Pet::whereKey($data['pet_id'])->where('owner_id', $data['owner_id'])->where('is_active', true)->firstOrFail();
+        $doctor = DoctorProfile::whereKey($data['doctor_id'])->where('approval_status', DoctorProfile::STATUS_APPROVED)
+            ->whereHas('user', fn ($query) => $query->where('is_active', true))->firstOrFail();
+        unset($data['owner_id']);
+
+        return $mutation->handle($request, $appointment, $data, fn ($locked, $values): Appointment => tap($locked, fn (Appointment $record) => $record->update($values)), [
+            'Mascota' => $pet->name,
+            'Doctor' => $doctor->user->name,
+            'Fecha' => $data['scheduled_at'],
+            'Motivo' => $data['reason'],
+        ]);
+    }
+
+    public function destroyAppointment(Request $request, ConfirmedMutation $mutation): JsonResponse
+    {
+        abort_unless($request->user()->hasPermission('citas.eliminar'), 403);
+        $appointment = Appointment::findOrFail($request->route('record'));
+        abort_if($appointment->consultation()->exists() || $appointment->serviceOrder()->exists(), 409, 'No se puede eliminar una cita con atención relacionada.');
+
+        return $mutation->handle($request, $appointment, ['id' => $appointment->id], function ($locked): Appointment {
+            $locked->delete();
+
+            return $locked;
+        }, ['Acción' => 'Eliminar cita', 'ID' => $appointment->id]);
+    }
+
+    public function updateConsultation(Request $request, ConfirmedMutation $mutation): JsonResponse
+    {
+        abort_unless($request->user()->hasPermission('consultas.editar'), 403);
+        $consultation = Consultation::findOrFail($request->route('record'));
+        $data = $request->validate([
+            'pet_id' => ['required', 'integer', 'exists:pets,id'],
+            'consulted_at' => ['required', 'date_format:Y-m-d\TH:i', 'before_or_equal:now'],
+            'reason' => ['required', 'string', 'min:3', 'max:255'],
+            'diagnosis' => ['required', 'string', 'min:3', 'max:5000'],
+            'treatment' => ['nullable', 'string', 'max:5000'],
+            'weight' => ['nullable', 'numeric', 'between:0,9999.99'],
+            'temperature' => ['nullable', 'numeric', 'between:0,99.9'],
+            'observations' => ['nullable', 'string', 'max:5000'],
+        ]);
+        $pet = Pet::with('owner')->whereKey($data['pet_id'])->where('is_active', true)->firstOrFail();
+
+        return $mutation->handle($request, $consultation, $data, fn ($locked, $values): Consultation => tap($locked, fn (Consultation $record) => $record->update($values)), [
+            'Mascota' => $pet->name,
+            'Propietario' => $pet->owner?->full_name ?? 'Sin propietario',
+            'Fecha' => $data['consulted_at'],
+        ]);
+    }
+
+    public function destroyConsultation(Request $request, ConfirmedMutation $mutation): JsonResponse
+    {
+        abort_unless($request->user()->hasPermission('consultas.eliminar'), 403);
+        $consultation = Consultation::findOrFail($request->route('record'));
+
+        return $mutation->handle($request, $consultation, ['id' => $consultation->id], function ($locked): Consultation {
+            $locked->delete();
+
+            return $locked;
+        }, ['Acción' => 'Eliminar consulta', 'ID' => $consultation->id]);
+    }
+
     public function attendAppointment(Request $request, Appointment $appointment, ServiceOrderService $orders): RedirectResponse
     {
         abort_unless($request->user()->hasPermission('ordenes_atencion.crear'), 403);
@@ -189,9 +269,10 @@ class OperationalController extends Controller
 
     public function storeConsultation(Request $request, ConfirmedMutation $mutation): JsonResponse
     {
-        abort_unless($request->user()->isAdmin() || $request->user()->isDoctor(), 403);
+        abort_unless($request->user()->isDoctor() || $request->user()->hasPermission('consultas.crear'), 403);
         $data = $request->validate([
             'pet_id' => ['required', 'integer', 'exists:pets,id'],
+            'doctor_id' => ['nullable', 'integer', 'exists:doctor_profiles,id'],
             'consulted_at' => ['required', 'date_format:Y-m-d\TH:i', 'before_or_equal:now'],
             'reason' => ['required', 'string', 'min:3', 'max:255'],
             'diagnosis' => ['required', 'string', 'min:3', 'max:5000'],
@@ -200,7 +281,9 @@ class OperationalController extends Controller
             'temperature' => ['nullable', 'numeric', 'between:0,99.9'],
             'observations' => ['nullable', 'string', 'max:5000'],
         ]);
-        $doctorId = $request->user()->doctorProfile?->id;
+        $doctorId = $request->user()->isDoctor()
+            ? $request->user()->doctorProfile?->id
+            : ($data['doctor_id'] ?? null);
         abort_unless($doctorId, 403);
         $pet = Pet::with('owner')->whereKey($data['pet_id'])->where('is_active', true)->firstOrFail();
         $data['doctor_id'] = $doctorId;
@@ -257,7 +340,7 @@ class OperationalController extends Controller
         ];
     }
 
-    private function consultationFormFields(): array
+    private function consultationFormFields(Request $request, string $role): array
     {
         return [
             'pet_id' => [
@@ -267,6 +350,16 @@ class OperationalController extends Controller
                 'options' => Pet::with('owner.user')->where('is_active', true)->orderBy('name')->get()
                     ->mapWithKeys(fn (Pet $pet): array => [$pet->id => $pet->owner?->full_name.' · '.$pet->name.' ('.$pet->owner?->user?->username.')'])->all(),
                 'help' => 'Selecciona la mascota para mostrar su propietario.',
+            ],
+            'doctor_id' => [
+                'label' => 'Médico veterinario',
+                'required' => true,
+                'disabled' => $role === 'doctor',
+                'default' => $role === 'doctor' ? $request->user()->doctorProfile?->id : '',
+                'options' => DoctorProfile::with('user')
+                    ->where('approval_status', DoctorProfile::STATUS_APPROVED)
+                    ->whereHas('user', fn ($query) => $query->where('is_active', true))
+                    ->get()->mapWithKeys(fn (DoctorProfile $doctor): array => [$doctor->id => $doctor->user->name])->all(),
             ],
             'consulted_at' => ['label' => 'Fecha y hora de atención', 'required' => true, 'type' => 'datetime-local', 'default' => now()->format('Y-m-d\TH:i')],
             'reason' => ['label' => 'Motivo de consulta', 'required' => true],

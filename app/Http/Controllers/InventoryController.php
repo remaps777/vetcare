@@ -45,18 +45,23 @@ class InventoryController extends Controller
         ];
         abort_unless($request->user()->hasPermission($permissions[$section] ?? 'inventario.ver'), 403);
         abort_unless(isset($permissions[$section]), 404);
-        $movements = $request->user()->hasPermission('inventario.movimientos.ver')
+        $movements = $section === 'movements' && $request->user()->hasPermission('inventario.movimientos.ver')
             ? StockMovement::with('user', 'warehouse')->whereNotNull('warehouse_id')->latest('id')->paginate(20)
             : StockMovement::query()->whereKey(0)->paginate(20);
-        $inventory->addMovementItemNames($movements->getCollection());
+        if ($section === 'movements') {
+            $inventory->addMovementItemNames($movements->getCollection());
+        }
         $canInventory = $request->user()->hasPermission('inventario.ver');
         $canMedications = $request->user()->hasPermission('medicamentos.ver');
+        $items = $canInventory && $section === 'stocks'
+            ? $inventory->getPaginatedInventoryOverview()
+            : collect();
 
         return view('inventory.index', [
             'warehouses' => $canInventory ? Warehouse::where('is_active', true)->orderBy('name')->get() : collect(),
             'medications' => $canMedications ? Medication::where('is_active', true)->orderBy('name')->get() : collect(),
             'products' => $canInventory ? Product::where('is_active', true)->orderBy('name')->get() : collect(),
-            'items' => $canInventory ? $inventory->getInventoryOverview() : collect(),
+            'items' => $items,
             'movements' => $movements,
             'section' => $section,
         ]);

@@ -9,6 +9,7 @@
         'COMPLETED' => 'Atendida',
         'CANCELLED' => 'Cancelada',
     ];
+    $hasActions = $canEdit || $canDelete || ($canUpdateStatus ?? false) || ($canAttendOrder ?? false);
 @endphp
 <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
     <div><h1 class="h3 fw-bold">{{ $title }}</h1><p class="text-secondary mb-0">{{ $description }}</p></div>
@@ -24,13 +25,13 @@
     @if($records->isEmpty())<p class="text-secondary text-center py-4 mb-0">No hay registros disponibles.</p>
     @else
         <div class="table-responsive"><table class="table align-middle mb-3" data-datatable>
-            <thead><tr>@foreach($columns as $label)<th scope="col">{{ $label }}</th>@endforeach @if($canEdit || $canDelete || ($canUpdateStatus ?? false))<th scope="col">Acciones</th>@endif</tr></thead>
+            <thead><tr>@foreach($columns as $label)<th scope="col">{{ $label }}</th>@endforeach @if($hasActions)<th scope="col">Acciones</th>@endif</tr></thead>
             <tbody>@foreach($records as $record)<tr>
                 @foreach($columns as $key => $label)
                     @php $value = data_get($record, $key); @endphp
                     <td>@if($value instanceof \DateTimeInterface) {{ $value->format('d/m/Y H:i') }} @elseif(is_bool($value)) <span class="badge {{ $value ? 'text-bg-success' : 'text-bg-secondary' }}">{{ $key === 'is_active' ? ($value ? 'Activo' : 'Inactivo') : ($value ? 'Sí' : 'No') }}</span> @elseif($key === 'status') <span class="badge text-bg-light border">{{ $statusLabels[$value] ?? $value ?? '—' }}</span> @else {{ $value ?? '—' }} @endif</td>
                 @endforeach
-                @if($canEdit || $canDelete || ($canUpdateStatus ?? false) || ($canAttendOrder ?? false))<td class="text-nowrap">
+                @if($hasActions)<td class="text-nowrap">
                     @if($canEdit)<button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editRecord{{ $record->id }}">Editar</button>@endif
                     @if($statusCatalog && $canEdit)<button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#catalogStatus{{ $record->id }}">{{ $record->is_active ? 'Desactivar' : 'Activar' }}</button>@endif
                     @if($canDelete)<button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteRecord{{ $record->id }}">Eliminar</button>@endif

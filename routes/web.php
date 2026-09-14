@@ -84,6 +84,11 @@ Route::middleware([AuthenticateWebOrSanctum::class, 'active'])->group(function (
             Route::get('/'.$path, [OperationalController::class, 'index'])->defaults('module', $path)->name($path);
         }
         Route::post('/appointments', [OperationalController::class, 'storeAppointment'])->name('appointments.store');
+        Route::patch('/appointments/{record}', [OperationalController::class, 'updateAppointment'])->whereNumber('record')->name('appointments.update');
+        Route::delete('/appointments/{record}', [OperationalController::class, 'destroyAppointment'])->whereNumber('record')->name('appointments.destroy');
+        Route::post('/consultations', [OperationalController::class, 'storeConsultation'])->name('consultations.store');
+        Route::patch('/consultations/{record}', [OperationalController::class, 'updateConsultation'])->whereNumber('record')->name('consultations.update');
+        Route::delete('/consultations/{record}', [OperationalController::class, 'destroyConsultation'])->whereNumber('record')->name('consultations.destroy');
     });
 
     Route::prefix('admin')->name('admin.')->middleware('permission:usuarios.ver')->group(function (): void {
@@ -167,8 +172,12 @@ Route::middleware([AuthenticateWebOrSanctum::class, 'active'])->group(function (
             Route::get('/'.$path, [OperationalController::class, 'index'])->defaults('module', $path)->name($path);
         }
         Route::post('/appointments', [OperationalController::class, 'storeAppointment'])->name('appointments.store');
+        Route::patch('/appointments/{record}', [OperationalController::class, 'updateAppointment'])->whereNumber('record')->name('appointments.update');
+        Route::delete('/appointments/{record}', [OperationalController::class, 'destroyAppointment'])->whereNumber('record')->name('appointments.destroy');
         Route::patch('/appointments/{record}/status', [OperationalController::class, 'updateAppointmentStatus'])->whereNumber('record')->name('appointments.status');
         Route::post('/consultations', [OperationalController::class, 'storeConsultation'])->name('consultations.store');
+        Route::patch('/consultations/{record}', [OperationalController::class, 'updateConsultation'])->whereNumber('record')->name('consultations.update');
+        Route::delete('/consultations/{record}', [OperationalController::class, 'destroyConsultation'])->whereNumber('record')->name('consultations.destroy');
         Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
         Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     });

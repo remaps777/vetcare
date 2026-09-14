@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Models\Warehouse;
 use App\Models\WarehouseStock;
 use App\Repositories\InventoryRepository;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
@@ -57,6 +58,9 @@ class InventoryService
 
         $stocks = WarehouseStock::query()
             ->whereIn('item_type', ['medication', 'product'])
+            ->whereIn('warehouse_id', fn ($query) => $query->select('id')->from('warehouses')->whereIn('code', ['CLINIC', 'STORE']))
+            ->selectRaw('item_type, item_id, warehouse_id, SUM(quantity) AS quantity')
+            ->groupBy('item_type', 'item_id', 'warehouse_id')
             ->get()
             ->keyBy(fn (WarehouseStock $stock): string => $stock->item_type.':'.$stock->item_id.':'.$stock->warehouse_id);
 
@@ -68,6 +72,62 @@ class InventoryService
 
             return [...$item, 'clinic_stock' => $clinic, 'store_stock' => $store, 'total_stock' => $clinic + $store];
         })->values();
+    }
+
+    /** @return LengthAwarePaginator<int, array<string, mixed>> */
+    public function getPaginatedInventoryOverview(int $perPage = 20): LengthAwarePaginator
+    {
+        $items = Medication::query()
+            ->selectRaw("'medication' AS item_type, id AS item_id, name, presentation, minimum_stock, is_active")
+            ->unionAll(Product::query()
+                ->selectRaw("'product' AS item_type, id AS item_id, name, presentation, minimum_stock, is_active"));
+
+        $stocks = WarehouseStock::query()
+            ->join('warehouses', 'warehouses.id', '=', 'warehouse_stocks.warehouse_id')
+            ->whereIn('warehouses.code', ['CLINIC', 'STORE'])
+            ->selectRaw('warehouse_stocks.item_type, warehouse_stocks.item_id')
+            ->selectRaw("SUM(CASE WHEN warehouses.code = 'CLINIC' THEN warehouse_stocks.quantity ELSE 0 END) AS clinic_stock")
+            ->selectRaw("SUM(CASE WHEN warehouses.code = 'STORE' THEN warehouse_stocks.quantity ELSE 0 END) AS store_stock")
+            ->groupBy('warehouse_stocks.item_type', 'warehouse_stocks.item_id');
+
+        $paginator = DB::query()
+            ->fromSub($items, 'items')
+            ->leftJoinSub($stocks, 'stocks', function ($join): void {
+                $join->on('stocks.item_type', '=', 'items.item_type')
+                    ->on('stocks.item_id', '=', 'items.item_id');
+            })
+            ->select([
+                'items.item_type',
+                'items.item_id',
+                'items.name',
+                'items.presentation',
+                'items.minimum_stock',
+                'items.is_active',
+                DB::raw('COALESCE(stocks.clinic_stock, 0) AS clinic_stock'),
+                DB::raw('COALESCE(stocks.store_stock, 0) AS store_stock'),
+            ])
+            ->orderBy('items.name')
+            ->orderBy('items.item_id')
+            ->paginate($perPage);
+
+        $paginator->setCollection($paginator->getCollection()->map(function (object $item): array {
+            $clinic = (int) $item->clinic_stock;
+            $store = (int) $item->store_stock;
+
+            return [
+                'item_type' => $item->item_type,
+                'item_id' => (int) $item->item_id,
+                'name' => $item->name,
+                'presentation' => $item->presentation,
+                'minimum_stock' => (int) $item->minimum_stock,
+                'is_active' => (bool) $item->is_active,
+                'clinic_stock' => $clinic,
+                'store_stock' => $store,
+                'total_stock' => $clinic + $store,
+            ];
+        }));
+
+        return $paginator;
     }
 
     public function registerEntry(Warehouse $warehouse, string $itemType, int $itemId, int $quantity, string $reason, User $user, ?string $referenceType = null, ?int $referenceId = null): StockMovement

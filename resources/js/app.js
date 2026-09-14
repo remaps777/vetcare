@@ -48,6 +48,16 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     document.querySelectorAll('[data-datatable]').forEach((table) => {
+        const columnCount = table.querySelectorAll('thead tr:first-child th').length;
+        table.querySelectorAll('tbody tr').forEach((row) => {
+            const cells = row.querySelectorAll(':scope > td, :scope > th');
+            if (cells.length === columnCount) {
+                return;
+            }
+
+            row.replaceChildren(...Array.from({ length: columnCount }, () => document.createElement('td')));
+        });
+
         new DataTable(table, {
             responsive: true,
             paging: false,
